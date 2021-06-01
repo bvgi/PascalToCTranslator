@@ -29,7 +29,6 @@ def p_program(p):
 def p_block(p):
     '''
     block : variable_declaration_part procedure_or_function compound_statement
-            | variable_declaration_part compound_statement
     '''
     if len(p) == 4:
         p[0] = Node('block', p[1], p[2], p[3])
@@ -158,9 +157,9 @@ def p_compound_statement(p):
 def p_statement_sequence(p):
     '''
         statement_sequence : statement SEMICOLON statement_sequence
-			                | statement SEMICOLON
+			                | statement
     '''
-    if len(p) == 3:
+    if len(p) == 2:
         p[0] = p[1]
     else:
         p[0] = Node('statement_sequence', p[1], p[3])
@@ -168,8 +167,8 @@ def p_statement_sequence(p):
 
 def p_statement(p):
     '''
-    statement : assignment_statement
-             | compound_statement
+    statement : compound_statement
+             | assignment_statement
              | if_statement
              | while_statement
              | repeat_statement
@@ -219,14 +218,23 @@ def p_assignment_statement(p):
 
 def p_if_statement(p):
     '''
-        if_statement : IF expression THEN statement
-                    | IF expression THEN statement ELSE statement
+        if_statement : IF expression THEN statement else_statement
     '''
-    if len(p) == 5:
-        p[0] = Node('if', p[2], p[4])
-    else:
-        p[0] = Node('if', p[2], p[4], p[6])
+    if len(p) == 6:
+        p[0] = Node('if', p[2], p[4], p[5])
+    # else:
+    #     p[0] = Node('if', p[2], p[4], p[6])
 
+
+def p_else_statement(p):
+    '''
+        else_statement : ELSE statement
+                    | empty
+    '''
+    if len(p) == 3:
+        p[0] = Node('if', p[2])
+    else:
+        p[0] = p[1]
 
 def p_while_statement(p):
     '''
@@ -354,7 +362,6 @@ def p_error(p):
     print("Syntax error in input, in line %d!" % p.lineno)
     sys.exit()
 
-
 if __name__ == '__main__':
     lexer = lex.lex()
     logging.basicConfig(
@@ -364,7 +371,7 @@ if __name__ == '__main__':
         format="%(filename)10s:%(lineno)4d:%(message)s"
     )
     log = logging.getLogger()
-    parser = yacc.yacc(start="program",debug=True, errorlog=log)
+    parser = yacc.yacc(start="program", debug=True, errorlog=log)
 
     data = '''program TEST;
     var
@@ -376,9 +383,18 @@ if __name__ == '__main__':
     end;
     
     begin
+        while i = 1 do
+        begin
+            writeln(i);
+        end;
+        repeat writeln(i)
+        until i = 0;
         for i := 0 to 2 do
         begin
-            foo;
+            if i = 1 then
+                i := 0
+            else
+                i := 10
         end;
     end.'''
 
