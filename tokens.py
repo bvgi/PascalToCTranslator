@@ -40,7 +40,7 @@ tokens = (
     # operations
     'PLUS',
     'MINUS',
-    'TIMES',
+    'MULTIPLY',
     'INT_DIV',
     'FLOAT_DIV',
     'MOD',
@@ -56,11 +56,11 @@ tokens = (
     # functions
     'LPAREN',
     'RPAREN',
-    'LBRACKET',
-    'RBRACKET',
+    # 'LBRACKET',
+    # 'RBRACKET',
     'PROCEDURE',
     'FUNCTION',
-    'OF',
+    # 'OF',
 
     # types
     # 'ARRAY',
@@ -89,7 +89,7 @@ t_COMMA = r","
 
 t_PLUS = r"\+"
 t_MINUS = r"\-"
-t_TIMES = r"\*"
+t_MULTIPLY = r"\*"
 t_FLOAT_DIV = r"/"
 
 t_EQ = r"\="
@@ -101,8 +101,8 @@ t_GTE = r"\>\="
 
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
-t_LBRACKET = r"\["
-t_RBRACKET = r"\]"
+# t_LBRACKET = r"\["
+# t_RBRACKET = r"\]"
 
 # t_REAL = r"(\-)*[0-9]+\.[0-9]+"
 # t_INTEGER = r"(\-)*[0-9]+"
@@ -203,7 +203,7 @@ def t_error(t):
 
 if __name__ == '__main__':
     lexer = lex.lex()
-    data = '''program TEST
+    data = '''program TEST;
     var
     i: integer;
 
