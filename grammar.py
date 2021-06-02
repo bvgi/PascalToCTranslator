@@ -30,10 +30,7 @@ def p_block(p):
     '''
     block : variable_declaration_part procedure_or_function compound_statement
     '''
-    if len(p) == 4:
-        p[0] = Node('block', p[1], p[2], p[3])
-    else:
-        p[0] = Node('block', p[1], p[2])
+    p[0] = Node('block', p[1], p[2], p[3])
 
 
 def p_variable_declaration_part(p):
