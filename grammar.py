@@ -354,14 +354,15 @@ def p_sign(p):
 def p_element(p):
     '''
         element : BOOLEAN
-               | NOT element
-               | IDENTIFIER
-               | REAL
-               | INTEGER
-               | CHAR
-               | STRING
-               | LPAREN expression RPAREN
-               | function_call
+                | NOT element
+                | IDENTIFIER
+                | REAL
+                | INTEGER
+                | CHAR
+                | STRING
+                | LPAREN expression RPAREN
+                | function_call
+                | empty
     '''
     if len(p) == 2:
         p[0] = Node("element", p[1])

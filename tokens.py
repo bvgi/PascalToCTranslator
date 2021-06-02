@@ -69,6 +69,8 @@ tokens = (
     'STRING',
     'CHAR',
     'BOOLEAN',
+    # 'BOOLEAN_TRUE',
+    # 'BOOLEAN_FALSE',
 
     # types names
     # 'SARRAY',
@@ -135,14 +137,22 @@ reserved_keywords = {
     'function': 'FUNCTION',
     # 'of': 'OF',
 
+    # 'true': 'BOOLEAN_TRUE', #TODO: dopytać
+    # 'false': 'BOOLEAN_FALSE',
+
     'real': 'SREAL',
     'integer': 'SINTEGER',
     'string': 'SSTRING',
     'char': 'SCHAR',
     'boolean': 'SBOOLEAN',
+
     # 'array': 'SARRAY',
 }
 
+def t_BOOLEAN(t):
+    r"true|false"
+    t.value = bool(t.value)
+    return t
 
 def t_IDENTIFIER(t):
     r"[a-zA-Z][a-zA-Z0-9]*"
@@ -185,6 +195,7 @@ def t_STRING(t):
     #         else:
     #             new_str += c
     return t
+#
 
 
 def t_newline(t):
@@ -206,6 +217,7 @@ if __name__ == '__main__':
     data = '''program TEST;
     var
     i: integer;
+    j: boolean;
 
     procedure foo;
     begin
@@ -213,6 +225,7 @@ if __name__ == '__main__':
     end;
     
     begin
+        j := true;
         for i := 0 to 2 do
         begin
             writeLn(i);
