@@ -157,9 +157,9 @@ def p_compound_statement(p):
 def p_statement_sequence(p):
     '''
         statement_sequence : statement SEMICOLON statement_sequence
-			                | statement
+			                | statement SEMICOLON
     '''
-    if len(p) == 2:
+    if len(p) == 3:
         p[0] = p[1]
     else:
         p[0] = Node('statement_sequence', p[1], p[3])
@@ -174,10 +174,16 @@ def p_statement(p):
              | repeat_statement
              | for_statement
              | procedure_or_function_call
-             | empty
     '''
     # if len(p) > 1: #EMPTY
     p[0] = p[1]
+
+# def p_statement(p):
+#     '''
+#         statement : no_if_statement
+#                 | if_statement
+#     '''
+#     p[0] = p[1]
 
 
 def p_procedure_or_function_call(p):
@@ -216,25 +222,67 @@ def p_assignment_statement(p):
     p[0] = Node('assign', p[1], p[3])
 
 
+# def p_if_statement(p):
+#     '''
+#         if_statement : open_statement
+#                     | closed_statement
+#     '''
+#     p[0] = p[1]
+#
+#
+# def p_open_statement(p):
+#     '''
+#         open_statement : IF expression THEN if_statement
+#                     | IF expression THEN closed_statement ELSE open_statement
+#     '''
+#     if len(p) == 5:
+#         p[0] = Node('open_if', p[2], p[4])
+#     else:
+#         p[0] = Node('open_if', p[2], p[4], p[6])
+#
+#
+# def p_closed_statement(p):
+#     '''
+#         closed_statement : statement
+#                         | IF expression THEN closed_statement ELSE closed_statement
+#     '''
+#     if len(p) == 2:
+#         p[0] = p[1]
+#     else:
+#         p[0] = Node('closed_if', p[2], p[4], p[6])
+
+# def p_no_if_statement(p):
+#     '''
+#         no_if_statement : compound_statement
+#              | assignment_statement
+#              | while_statement
+#              | repeat_statement
+#              | for_statement
+#              | procedure_or_function_call
+#     '''
+#     p[0] = p[1]
+
+
 def p_if_statement(p):
     '''
-        if_statement : IF expression THEN statement else_statement
+        if_statement : IF expression THEN compound_statement else_statement
     '''
-    if len(p) == 6:
-        p[0] = Node('if', p[2], p[4], p[5])
+    # if len(p) == 5:
+    p[0] = Node('if', p[2], p[4], p[5])
     # else:
     #     p[0] = Node('if', p[2], p[4], p[6])
 
 
 def p_else_statement(p):
     '''
-        else_statement : ELSE statement
+        else_statement : ELSE compound_statement
                     | empty
     '''
     if len(p) == 3:
         p[0] = Node('if', p[2])
     else:
         p[0] = p[1]
+
 
 def p_while_statement(p):
     '''
@@ -362,6 +410,7 @@ def p_error(p):
     print("Syntax error in input, in line %d!" % p.lineno)
     sys.exit()
 
+
 if __name__ == '__main__':
     lexer = lex.lex()
     logging.basicConfig(
@@ -376,12 +425,10 @@ if __name__ == '__main__':
     data = '''program TEST;
     var
     i: integer;
-
     procedure foo;
     begin
         i := 1;
     end;
-    
     begin
         while i = 1 do
         begin
@@ -392,18 +439,16 @@ if __name__ == '__main__':
         for i := 0 to 2 do
         begin
             if i = 1 then
-                i := 0
+            begin
+                i := 0;
+            end
             else
-                i := 10
+            begin
+                i := 1;
+            end;
         end;
     end.'''
 
     # lexer.input(data)
     result = parser.parse(input=data, lexer=lexer, debug=True)
     print(result)
-    # while True:
-    #
-    #     tok = lexer.token()
-    #     if not tok:
-    #         break
-    #     print(tok)
