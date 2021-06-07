@@ -165,10 +165,12 @@ def t_REAL(t):
     t.value = float(t.value)
     return t
 
+
 def t_INTEGER(t):
     r"(\-)*[0-9]+"
     t.value = int(t.value)
     return t
+
 
 def t_CHAR(t):
     r"(\'([^\\\'])\')"
@@ -212,33 +214,33 @@ def t_error(t):
     print("Illegal character '%s'" % t.value[0])
 
 
-if __name__ == '__main__':
-    lexer = lex.lex()
-    data = '''program TEST;
-    var
-    i: integer;
-    j: boolean;
-
-    procedure foo;
-    begin
-        i := 1;
-    end;
-    
-    begin
-        j := true;
-        for i := 0 to 2 do
-        begin
-            writeLn(i);
-            foo;
-        end;
-    end.'''
-    lexer.input(data)
-
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break
-        print(tok)
+# if __name__ == '__main__':
+#     lexer = lex.lex()
+#     data = '''program TEST;
+#     var
+#     i: integer;
+#     j: boolean;
+#
+#     procedure foo;
+#     begin
+#         i := 1;
+#     end;
+#
+#     begin
+#         j := true;
+#         for i := 0 to 2 do
+#         begin
+#             writeLn(i);
+#             foo;
+#         end;
+#     end.'''
+#     lexer.input(data)
+#
+#     while True:
+#         tok = lexer.token()
+#         if not tok:
+#             break
+#         print(tok)
 
 #     # Build the lexer
 #     from ply import lex

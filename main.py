@@ -3,6 +3,7 @@ import logging
 from ply import yacc
 
 from tokens import *
+from grammar import *
 
 if __name__ == '__main__':
     lexer = lex.lex()

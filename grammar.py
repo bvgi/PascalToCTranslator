@@ -1,9 +1,5 @@
 import sys
 from nodes import *
-from logging import log
-
-from ply import yacc
-
 from Node import *
 
 precedence = (
@@ -22,16 +18,16 @@ def p_empty(p):
 
 def p_program(p):
     '''
-    program : PROGRAM IDENTIFIER SEMICOLON block DOT
+    program : PROGRAM IDENTIFIER SEMICOLON variable_declaration_part procedure_or_function compound_statement DOT
     '''
-    p[0] = Node('program', p[2], p[4])
+    p[0] = Program(p[2], p[4], p[5], p[6])
 
 
 def p_block(p):
     '''
     block : variable_declaration_part procedure_or_function compound_statement
     '''
-    p[0] = Node('block', p[1], p[2], p[3])
+    p[0] = Block(p[1], p[2], p[3])
 
 
 def p_variable_declaration_part(p):
@@ -53,15 +49,14 @@ def p_variable_declaration_list(p):
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = Node('variable_declaration_list', p[1], p[2])
+        p[0] = VariableDeclarationList(p[1], p[2])
 
 
 def p_variable_declaration(p):
     '''
-    variable_declaration : IDENTIFIER COMMA variable_declaration
-                        | IDENTIFIER COLON type SEMICOLON
+    variable_declaration : IDENTIFIER COLON type SEMICOLON
     '''
-    p[0] = Node('variable_declaration', p[1], p[3])
+    p[0] = Variable(p[1], p[3])
 
 
 def p_type(p):
@@ -72,7 +67,7 @@ def p_type(p):
 	         | SSTRING
 	         | SBOOLEAN
     '''
-    p[0] = Node('type', p[1].lower())
+    p[0] = Type(p[1].lower())
 
 
 def p_procedure_or_function(p):
@@ -81,7 +76,7 @@ def p_procedure_or_function(p):
                         | empty
     '''
     if len(p) == 4:
-        p[0] = Node('procedure_or_function', p[1], p[3])
+        p[0] = ProcedureOrFunction(p[1], p[3])
     else:
         p[0] = p[1]
 
@@ -97,21 +92,18 @@ def p_function_declaration(p):
     '''
     function_declaration : function_heading SEMICOLON block
     '''
-    p[0] = Node('function', p[1], p[3])
+    p[0] = Function(p[1], p[3])
 
 
 def p_function_heading(p):
     '''
-    function_heading : FUNCTION type
-                    | FUNCTION IDENTIFIER COLON type
+    function_heading : FUNCTION IDENTIFIER COLON type
                     | FUNCTION IDENTIFIER LPAREN parameters_list RPAREN COLON type
     '''
-    if len(p) == 3:
-        p[0] = Node("function_head", p[2])
-    elif len(p) == 5:
-        p[0] = Node("function_head", p[2], p[4])
+    if len(p) == 5:
+        p[0] = FunctionHeading(p[2], p[4])
     else:
-        p[0] = Node("function_head", p[2], p[4], p[7])
+        p[0] = FunctionHeading(p[2], p[7], p[4])
 
 
 def p_parameters_list(p):
@@ -119,19 +111,19 @@ def p_parameters_list(p):
 		                | parameter
     '''
     if len(p) == 4:
-        p[0] = Node("parameters_list", p[1], p[3])
+        p[0] = ParametersList(p[1], p[3])
     else:
         p[0] = p[1]
 
 
 def p_parameter(p):
     ''' parameter : IDENTIFIER COLON type '''
-    p[0] = Node("parameter", p[1], p[3])
+    p[0] = Parameter(p[1], p[3])
 
 
 def p_procedure_declaration(p):
     ''' procedure_declaration : procedure_heading SEMICOLON block '''
-    p[0] = Node("procedure", p[1], p[3])
+    p[0] = Procedure(p[1], p[3])
 
 
 def p_procedure_heading(p):
@@ -140,9 +132,9 @@ def p_procedure_heading(p):
                             | PROCEDURE IDENTIFIER LPAREN parameters_list RPAREN
 	'''
     if len(p) == 3:
-        p[0] = Node("procedure_head", p[2])
+        p[0] = ProcedureHeading(p[2])
     else:
-        p[0] = Node("procedure_head", p[2], p[4])
+        p[0] = ProcedureHeading(p[2], p[4])
 
 
 def p_compound_statement(p):
@@ -160,7 +152,7 @@ def p_statement_sequence(p):
     if len(p) == 3:
         p[0] = p[1]
     else:
-        p[0] = Node('statement_sequence', p[1], p[3])
+        p[0] = StatementSequence(p[1], p[3])
 
 
 def p_statement(p):
@@ -173,7 +165,6 @@ def p_statement(p):
              | for_statement
              | procedure_or_function_call
     '''
-    # if len(p) > 1: #EMPTY
     p[0] = p[1]
 
 
@@ -191,62 +182,63 @@ def p_procedure_or_function_call(p):
                                  | IDENTIFIER LPAREN variables_list RPAREN
     '''
     if len(p) == 2:
-        p[0] = Node("procedure_or_function_call", p[1])
+        p[0] = ProcOrFunCall(p[1])
     else:
-        p[0] = Node("procedure_or_function_call", p[1], p[3])
+        p[0] = ProcOrFunCall(p[1], p[3])
 
 
 def p_variables_list(p):
     '''
-        variables_list : variables_list COMMA variable
-	                    | variable
+        variables_list : variables_list COMMA expression
+	                    | expression
     '''
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = Node("variables_list", p[1], p[3])
+        p[0] = VariablesList(p[1], p[3])
 
 
-def p_variable(p):
-    '''
-        variable : expression
-    '''
-    p[0] = Node("parameter", p[1])
+# def p_variable(p):
+#     '''
+#         variable : expression
+#     '''
+#     p[0] = Node("parameter", p[1])
 
 
 def p_assignment_statement(p):
     '''
         assignment_statement : IDENTIFIER ASSIGNMENT expression
     '''
-    p[0] = Node('assign', p[1], p[3])
+    p[0] = Assignment(p[1], p[3])
 
 
 def p_if_statement(p):
     '''
-        if_statement : IF expression THEN compound_statement else_statement
+        if_statement : IF expression THEN compound_statement
+                    | IF expression THEN compound_statement ELSE compound_statement
     '''
-    # if len(p) == 5:
-    p[0] = Node('if', p[2], p[4], p[5])
-    # else:
-    #     p[0] = Node('if', p[2], p[4], p[6])
-
-
-def p_else_statement(p):
-    '''
-        else_statement : ELSE compound_statement
-                    | empty
-    '''
-    if len(p) == 3:
-        p[0] = Node('if', p[2])
+    if len(p) == 5:
+        p[0] = If(p[2], p[4])
     else:
-        p[0] = p[1]
+        p[0] = IfElse(p[2], p[4], p[6])
+
+
+# def p_else_statement(p):
+#     '''
+#         else_statement : ELSE compound_statement
+#                     | empty
+#     '''
+#     if len(p) == 3:
+#         p[0] = Node('if', p[2])
+#     else:
+#         p[0] = p[1]
 
 
 def p_while_statement(p):
     '''
         while_statement : WHILE expression DO statement
     '''
-    p[0] = Node('while', p[2], p[4])
+    p[0] = While(p[2], p[4])
 
 
 def p_repeat_statement(p):
@@ -265,10 +257,10 @@ def p_for_statement(p):
 
 
 def p_expression(p):
-    """
+    '''
         expression : expression and_or expression_m
-                    | expression_m
-    """
+	               | expression_m
+    '''
     if len(p) == 2:
         p[0] = p[1]
     else:
@@ -327,6 +319,8 @@ def p_element(p):
     '''
     if len(p) == 2:
         p[0] = Element(p[1])
+    elif len(p) == 3:
+        p[0] = Element(p[2], no=True)
     else:
         p[0] = Element(p[2])
 
@@ -343,4 +337,4 @@ def p_error(p):
     sys.exit()
 
 
-parser = yacc.yacc(start="program", debug=True, errorlog=log)
+# parser = yacc.yacc(start="program", debug=True, errorlog=log)
