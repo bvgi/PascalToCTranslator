@@ -1,9 +1,10 @@
 import sys
+from nodes import *
+from logging import log
 
-from ply import yacc, lex
-from tokens import *
+from ply import yacc
+
 from Node import *
-import logging
 
 precedence = (
     ('left', 'PLUS', 'MINUS'),
@@ -175,6 +176,7 @@ def p_statement(p):
     # if len(p) > 1: #EMPTY
     p[0] = p[1]
 
+
 # def p_statement(p):
 #     '''
 #         statement : no_if_statement
@@ -219,47 +221,6 @@ def p_assignment_statement(p):
     p[0] = Node('assign', p[1], p[3])
 
 
-# def p_if_statement(p):
-#     '''
-#         if_statement : open_statement
-#                     | closed_statement
-#     '''
-#     p[0] = p[1]
-#
-#
-# def p_open_statement(p):
-#     '''
-#         open_statement : IF expression THEN if_statement
-#                     | IF expression THEN closed_statement ELSE open_statement
-#     '''
-#     if len(p) == 5:
-#         p[0] = Node('open_if', p[2], p[4])
-#     else:
-#         p[0] = Node('open_if', p[2], p[4], p[6])
-#
-#
-# def p_closed_statement(p):
-#     '''
-#         closed_statement : statement
-#                         | IF expression THEN closed_statement ELSE closed_statement
-#     '''
-#     if len(p) == 2:
-#         p[0] = p[1]
-#     else:
-#         p[0] = Node('closed_if', p[2], p[4], p[6])
-
-# def p_no_if_statement(p):
-#     '''
-#         no_if_statement : compound_statement
-#              | assignment_statement
-#              | while_statement
-#              | repeat_statement
-#              | for_statement
-#              | procedure_or_function_call
-#     '''
-#     p[0] = p[1]
-
-
 def p_if_statement(p):
     '''
         if_statement : IF expression THEN compound_statement else_statement
@@ -292,7 +253,7 @@ def p_repeat_statement(p):
     '''
         repeat_statement : REPEAT statement UNTIL expression
     '''
-    p[0] = Node('repeat', p[2], p[4])
+    p[0] = Repeat(p[2], p[4])
 
 
 def p_for_statement(p):
@@ -300,18 +261,18 @@ def p_for_statement(p):
     for_statement : FOR assignment_statement TO expression DO statement
 		        | FOR assignment_statement DOWNTO expression DO statement
     '''
-    p[0] = Node('for', p[2], p[3], p[4], p[6])
+    p[0] = For(p[2], p[3], p[4], p[6])
 
 
 def p_expression(p):
-    '''
+    """
         expression : expression and_or expression_m
-	               | expression_m
-    '''
+                    | expression_m
+    """
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = Node('expr', p[2], p[1], p[3])
+        p[0] = Expression(p[2], p[1], p[3])
 
 
 def p_expression_m(p):
@@ -322,7 +283,7 @@ def p_expression_m(p):
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = Node('expr', p[2], p[1], p[3])
+        p[0] = Expression(p[2], p[1], p[3])
 
 
 def p_and_or(p):
@@ -330,7 +291,7 @@ def p_and_or(p):
         and_or : AND
                | OR
     '''
-    p[0] = Node('and_or', p[1])
+    p[0] = AndOr(p[1])
 
 
 def p_sign(p):
@@ -348,7 +309,7 @@ def p_sign(p):
             | LTE
             | GTE
     '''
-    p[0] = Node('sign', p[1])
+    p[0] = Sign(p[1])
 
 
 def p_element(p):
@@ -365,43 +326,16 @@ def p_element(p):
                 | empty
     '''
     if len(p) == 2:
-        p[0] = Node("element", p[1])
-    elif len(p) == 3:
-        p[0] = Node('not', p[2])
+        p[0] = Element(p[1])
     else:
-        p[0] = Node('element', p[2])
+        p[0] = Element(p[2])
 
 
 def p_function_call(p):
     '''
         function_call : IDENTIFIER LPAREN variables_list RPAREN
     '''
-    p[0] = Node('function_call', p[1], p[3])
-
-
-# def p_identifier(p):
-#     """ identifier : IDENTIFIER """
-#     p[0] = Node('identifier', str(p[1]).lower())
-#
-#
-# def p_real(p):
-#     """ real : REAL """
-#     p[0] = Node('real', p[1])
-#
-#
-# def p_integer(p):
-#     """ integer : INTEGER """
-#     p[0] = Node('integer', p[1])
-#
-#
-# def p_string(p):
-#     """ string : STRING """
-#     p[0] = Node('string', p[1])
-#
-#
-# def p_char(p):
-#     """ char : CHAR """
-#     p[0] = Node('char', p[1])
+    p[0] = FunctionCall(p[1], p[3])
 
 
 def p_error(p):
@@ -409,44 +343,4 @@ def p_error(p):
     sys.exit()
 
 
-if __name__ == '__main__':
-    lexer = lex.lex()
-    logging.basicConfig(
-        level=logging.DEBUG,
-        filename="parselog.txt",
-        filemode="w",
-        format="%(filename)10s:%(lineno)4d:%(message)s"
-    )
-    log = logging.getLogger()
-    parser = yacc.yacc(start="program", debug=True, errorlog=log)
-
-    data = '''program TEST;
-    var
-    i: integer;
-    procedure foo;
-    begin
-        i := 1;
-    end;
-    begin
-        while i = 1 do
-        begin
-            writeln(i);
-        end;
-        repeat writeln(i)
-        until i = 0;
-        for i := 0 to 2 do
-        begin
-            if i = 1 then
-            begin
-                i := 0;
-            end
-            else
-            begin
-                i := 1;
-            end;
-        end;
-    end.'''
-
-    # lexer.input(data)
-    result = parser.parse(input=data, lexer=lexer, debug=True)
-    print(result)
+parser = yacc.yacc(start="program", debug=True, errorlog=log)
