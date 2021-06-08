@@ -179,25 +179,7 @@ def t_CHAR(t):
 
 def t_STRING(t):
     r"\'([^\\\']|(\\.))*\'"
-    # escaped = 0
-    # s = t.value[1:-1]
-    # new_str = ""
-    # for i in range(0, len(s)):
-    #     c = s[i]
-    #     if escaped:
-    #         if c == "n":
-    #             c = "\n"
-    #         elif c == "t":
-    #             c = "\t"
-    #         new_str += c
-    #         escaped = 0
-    #     else:
-    #         if c == "\\":
-    #             escaped = 1
-    #         else:
-    #             new_str += c
     return t
-#
 
 
 def t_newline(t):

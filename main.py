@@ -15,33 +15,12 @@ if __name__ == '__main__':
     )
     log = logging.getLogger()
     parser = yacc.yacc(start="program", debug=True, errorlog=log)
+    test = open('tests/test3.pas', 'r')
+    data = test.read()
 
-    data = '''program TEST;
-    var
-    i: integer;
-    procedure foo;
-    begin
-        i := 1;
-    end;
-    begin
-        while i = 1 do
-        begin
-            writeln(i);
-        end;
-        repeat writeln(i)
-        until i = 0;
-        for i := 0 to 2 do
-        begin
-            if i = 1 then
-            begin
-                i := 0;
-            end
-            else
-            begin
-                i := 1;
-            end;
-        end;
-    end.'''
-
-    ast = parser.parse(input=data, lexer=lexer, debug=True)
+    ast = parser.parse(input=data, lexer=lexer)
     print(ast)
+    # print(ast.toC())
+    file = open('tests/test3.c', 'w')
+    file.write(ast.toC())
+    file.close()

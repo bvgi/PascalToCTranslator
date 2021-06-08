@@ -1,3 +1,11 @@
+class Empty:
+    def __str__(self):
+        return "empty"
+
+    def toC(self):
+        return ""
+
+
 class Program:
     def __init__(self, identifier, variables, proc_or_func, statement):
         self.identifier = identifier
@@ -6,15 +14,20 @@ class Program:
         self.statement = statement
 
     def __str__(self):
-        return "program " + self.identifier + self.variables + self.proc_or_func + self.statement
+        return f"program " + str(self.identifier) + str(self.variables) + str(self.proc_or_func) + str(
+            self.statement) + "\n"
 
     def toC(self):
         converted_statement = "#include <stdio.h> \n \n"
-        converted_statement += self.proc_or_func.toC()
-        converted_statement += "int main(void){\n"
-        converted_statement += self.variables.toC() + "\n"
-        converted_statement += self.statement.toC() + "\n"
+        if not isinstance(self.proc_or_func, Empty):
+            converted_statement += self.proc_or_func.toC()
+        converted_statement += "\nint main(void){\n"
+        if not isinstance(self.variables, Empty):
+            converted_statement += self.variables.toC() + "\n"
+        elif not isinstance(self.statement, Empty):
+            converted_statement += self.statement.toC()
         converted_statement += "return 0; \n}"
+        return converted_statement
 
 
 class Block:
@@ -24,22 +37,85 @@ class Block:
         self.compound_statement = compound_statement
 
     def __str__(self):
-        return "block: " + self.variable_declaration_part + ", " + self.procedure_or_function + ", " + self.compound_statement
+        return "block: " + str(self.variable_declaration_part) + ", " + str(self.procedure_or_function) + ", " + str(
+            self.compound_statement) + "\n"
 
     def toC(self):
-        return f"{self.variable_declaration_part.toC()}\n{self.procedure_or_function.toC()}\n{self.compound_statement.toC()}\n"
+        output = ""
+        if not isinstance(self.variable_declaration_part, Empty):
+            output += f"{self.variable_declaration_part.toC()}\n"
+        elif not isinstance(self.procedure_or_function, Empty):
+            output += f"{self.procedure_or_function.toC()}\n"
+        elif not isinstance(self.compound_statement, Empty):
+            output += f"{self.compound_statement.toC()}"
+        return output
 
 
 class FunctionCall:
     def __init__(self, identifier, variables_list):
-        self.variables_list = variables_list
         self.identifier = identifier
+        self.variables_list = variables_list
 
     def __str__(self):
-        return f"function_call: {self.identifier}({self.variables_list});"
+        return f"function_call: {self.identifier}({self.variables_list}) \n"
 
     def toC(self):
-        return f"{self.identifier}({self.variables_list.toC});"
+        return f"{self.identifier.toC()}({self.variables_list.toC()})"
+
+
+class Real:
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return f"real: {self.value} \n"
+
+    def toC(self):
+        return f"{self.value}f"
+
+
+class Integer:
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return f"integer: {self.value} \n"
+
+    def toC(self):
+        return f"{self.value}"
+
+
+class String:
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return f"string: {self.value} \n"
+
+    def toC(self):
+        return f"\"{self.value[1:-1]}\""
+
+
+class Char:
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return f"char: {self.value}"
+
+    def toC(self):
+        return f"\'{self.value[1:-1]}\'"
+
+
+class Identifier:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f"{self.name}\n"
+
+    def toC(self):
+        return str(self.name)
 
 
 class Element:
@@ -51,19 +127,16 @@ class Element:
         return f"element: {self.element}"
 
     def toC(self):
-        if isinstance(self.element, FunctionCall):
-            return self.element.toC()
+        if f"{self.element}" == "element: True":
+            return "1"
+        elif f"{self.element}" == "element: False":
+            return "0"
         elif isinstance(self.element, Expression):
             return f"({self.element.toC()})"
         elif self.no:
             return f"!{self.element.toC()}"
         else:
-            if self.element == "true":
-                return "1"
-            elif self.element == "false":
-                return "0"
-
-
+            return f"{self.element.toC()}"
 
 
 class Sign:
@@ -71,7 +144,7 @@ class Sign:
         self.sign = sign
 
     def __str__(self):
-        return f"sign: {self.sign}"
+        return f"sign: {self.sign} \n"
 
     def toC(self):
         if self.sign == "div":
@@ -91,7 +164,7 @@ class AndOr:
         self.operator = operator
 
     def __str__(self):
-        return f"and_or: {self.operator}"
+        return f"and_or: {self.operator} \n"
 
     def toC(self):
         if self.operator == "and":
@@ -107,7 +180,7 @@ class Expression:
         self.expr2 = expr2
 
     def __str__(self):
-        return f"expression: {self.expr1} {self.sign} {self.expr2}"
+        return f"expression: {self.expr1} {self.sign} {self.expr2}\n"
 
     def toC(self):
         return f"{self.expr1.toC()} {self.sign.toC()} {self.expr2.toC()}"
@@ -119,10 +192,10 @@ class Assignment:
         self.expression = expression
 
     def __str__(self):
-        return f"assignment: {self.identifier} := {self.expression}"
+        return f"assignment: {self.identifier} := {self.expression}\n"
 
     def toC(self):
-        return f"{self.identifier} = {self.expression.toC()};"
+        return self.identifier.toC() + " = " + str(self.expression.toC()) + ";\n"
 
 
 class For:
@@ -133,13 +206,13 @@ class For:
         self.statement = statement
 
     def __str__(self):
-        return f"for_statement: for {self.assignment, self.operator, self.expression} do {self.statement}"
+        return f"for_statement: for {self.assignment, self.operator, self.expression} do {self.statement}\n"
 
     def toC(self):
         if self.operator == "to":
-            return f"for({self.assignment.toC()} ; {self.assignment.identifier}<={self.assignment.expression.toC()} ; {self.assignment.identifier}++)" + "{ \n" + self.statement.toC() + "\n}"
+            return f"for({self.assignment.toC()[:-1]}  {self.assignment.identifier.toC()} <= {self.expression.toC()} ; {self.assignment.identifier.toC()}++)" + "{ \n" + self.statement.toC() + "}\n"
         else:
-            return f"for({self.assignment.toC()} ; {self.assignment.identifier} <= {self.assignment.expression.toC()} ; {self.assignment.identifier}--)" + "{ \n" + self.statement.toC() + "\n}"
+            return f"for({self.assignment.toC()} ; {self.assignment.identifier} <= {self.assignment.expression.toC()} ; {self.assignment.identifier}--)" + "{ \n" + self.statement.toC() + "\n}\n"
 
 
 class Repeat:
@@ -148,10 +221,10 @@ class Repeat:
         self.expression = expression
 
     def __str__(self):
-        return f"repeat: repeat {self.statement} until {self.expression}"
+        return f"repeat: repeat {self.statement} until {self.expression}\n"
 
     def toC(self):
-        return "do { \n" + self.statement.toC() + "\n } while(" + self.expression.toC() + ");"
+        return "do { \n" + self.statement.toC() + "} while(" + self.expression.toC() + ");\n"
 
 
 class While:
@@ -160,10 +233,10 @@ class While:
         self.statement = statement
 
     def __str__(self):
-        return f"while: while {self.expression} do {self.statement}"
+        return f"while: while {self.expression} do {self.statement}\n"
 
     def toC(self):
-        return "while(" + self.expression.toC() + "){\n" + self.statement.toC() + "\n}"
+        return "while(" + self.expression.toC() + ") {\n" + self.statement.toC() + "}\n"
 
 
 class If:
@@ -172,10 +245,10 @@ class If:
         self.statement = statement
 
     def __str__(self):
-        return f"If: if {self.expression} then {self.statement}"
+        return f"If: if {self.expression} then {self.statement}\n"
 
     def toC(self):
-        return "if(" + self.expression.toC() + "){\n" + self.statement.toC() + "\n}"
+        return "if(" + self.expression.toC() + "){\n" + self.statement.toC() + "}\n"
 
 
 class IfElse:
@@ -185,10 +258,10 @@ class IfElse:
         self.statement2 = statement2
 
     def __str__(self):
-        return f"If: if {self.expression} then {self.statement1} else {self.statement2}"
+        return f"If: if {self.expression} then {self.statement1} else {self.statement2}\n"
 
     def toC(self):
-        return "if(" + self.expression.toC() + "){\n" + self.statement1.toC() + "\n} else { \n" + self.statement2.toC() + "\n}"
+        return "if(" + self.expression.toC() + "){\n" + self.statement1.toC() + "} else {\n" + self.statement2.toC() + "}\n"
 
 
 class VariablesList:
@@ -197,32 +270,26 @@ class VariablesList:
         self.expression = expression
 
     def __str__(self):
-        return f"variables list: {self.variables}, {self.expression}"
+        return f"variables list: {self.variables}, {self.expression}\n"
 
     def toC(self):
-        output = ""
-        for i, var in enumerate(self.variables):
-            if i != 0:
-                output += ", "
-            output += var.toC()
-        output += ", "
-        output += self.expression.toC()
+        output = f"{self.variables.toC()}, {self.expression.toC()}"
         return output
 
 
 class ProcOrFunCall:
-    def __init__(self, identifier, variables = None):
+    def __init__(self, identifier, variables=None):
         self.identifier = identifier
         self.variables = variables
 
     def __str__(self):
-        return f"procedure or function call: {self.identifier, self.variables}"
+        return f"procedure or function call: {self.identifier, self.variables}\n"
 
     def toC(self):
         if self.variables is None:
-            return f"{self.identifier}();"
+            return f"{self.identifier.toC()}();\n"
         else:
-            return f"{self.identifier}({self.variables.toC()});"
+            return f"{self.identifier.toC()}({self.variables.toC()});\n"
 
 
 class StatementSequence:
@@ -231,12 +298,11 @@ class StatementSequence:
         self.sequence = sequence
 
     def __str__(self):
-        return f"statement sequence: {self.statement}; {self.sequence}"
+        return f"statement sequence: {self.statement}; {self.sequence}\n"
 
     def toC(self):
         output = f"{self.statement.toC()}"
-        for i, statement in enumerate(self.sequence):
-            output += statement.toC()
+        output += self.sequence.toC()
         return output
 
 
@@ -266,13 +332,14 @@ class Parameter:
         self.typename = typename
 
     def __str__(self):
-        return f"parameter: {self.identifier}: {self.typename}"
+        return f"parameter: {self.identifier}: {self.typename}\n"
 
     def toC(self):
-        if self.typename == "string":
-            return f"{self.typename.toC()} *{self.identifier}"
+        if f"{self.typename}" == "type: string":
+            return f"{self.typename.toC()} *{self.identifier.toC()}"
         else:
-            return f"{self.typename.toC()} {self.identifier}"
+            return f"{self.typename.toC()} {self.identifier.toC()}"
+
 
 class ParametersList:
     def __init__(self, parameter, p_list):
@@ -280,30 +347,26 @@ class ParametersList:
         self.p_list = p_list
 
     def __str__(self):
-        return f"parameters list: {self.parameter}: {self.p_list}"
+        return f"parameters list: {self.parameter}: {self.p_list}\n"
 
     def toC(self):
-        output = self.parameter.toC() + ", "
-        for i, param in enumerate(self.p_list):
-            if i != 0:
-                output += ", "
-            output += param.toC()
+        output = self.parameter.toC() + ", " + self.p_list.toC()
         return output
 
 
 class ProcedureHeading:
-    def __init__(self, identifier, parameters = None):
+    def __init__(self, identifier, parameters=None):
         self.identifier = identifier
         self.parameters = parameters
 
     def __str__(self):
-        return f"procedure heading: {self.identifier}, {self.parameters}"
+        return f"procedure heading: {self.identifier}, {self.parameters}\n"
 
     def toC(self):
         if self.parameters is None:
-            return f"void {self.identifier}()\n"
+            return f"void {self.identifier.toC()}()"
         else:
-            return f"void {self.identifier}({self.parameters.toC()})\n"
+            return f"void {self.identifier.toC()}({self.parameters.toC()})"
 
 
 class Procedure:
@@ -312,10 +375,10 @@ class Procedure:
         self.block = block
 
     def __str__(self):
-        return f"procedure: {self.heading}; {self.block}"
+        return f"procedure: {self.heading}; {self.block}\n"
 
     def toC(self):
-        return self.heading.toC() + "{\n" + self.block.toC() + "\n}"
+        return self.heading.toC() + "{\n" + self.block.toC() + "}\n"
 
 
 class FunctionHeading:
@@ -325,16 +388,20 @@ class FunctionHeading:
         self.params = params
 
     def __str__(self):
-        return f"function heading: {self.identifier} ({self.params}) : {self.typename}"
+        return f"function heading: {self.identifier} ({self.params}) : {self.typename}\n"
 
     def toC(self):
         new_type = self.typename.toC()
-        if self.typename == "string":
+
+        if f"{self.typename}" == "type: string":
             new_type += "*"
-        if self.params is None:
-            return f"{new_type} {self.identifier}()\n"
+            declaration_part = f"{self.typename.toC()} *{self.identifier.toC()};\n"
         else:
-            return f"{new_type} {self.identifier}({self.params.toC()})\n"
+            declaration_part = f"{self.typename.toC()} {self.identifier.toC()};\n"
+        if self.params is None:
+            return f"{new_type} {self.identifier.toC()}()" + "{\n" + declaration_part
+        else:
+            return f"{new_type} {self.identifier.toC()}({self.params.toC()})" + "{\n" + declaration_part
 
 
 class Function:
@@ -343,10 +410,10 @@ class Function:
         self.block = block
 
     def __str__(self):
-        return f"function: {self.heading}; {self.block}"
+        return f"function: {self.heading}; {self.block}\n"
 
     def toC(self):
-        return self.heading.toC() + "{\n" + self.block.toC() + "\n}"
+        return self.heading.toC() + self.block.toC() + "return "+ self.heading.identifier.toC() +";\n}\n"
 
 
 class ProcedureOrFunction:
@@ -355,10 +422,11 @@ class ProcedureOrFunction:
         self.proc_or_func = proc_or_func
 
     def __str__(self):
-        return f"procedure or function: {self.declaration}; {self.proc_or_func}"
+        return f"procedure or function: {self.declaration}; {self.proc_or_func}\n"
 
     def toC(self):
         return f"{self.declaration.toC()}\n{self.proc_or_func.toC()}"
+
 
 class Variable:
     def __init__(self, identifier, typename):
@@ -366,13 +434,13 @@ class Variable:
         self.typename = typename
 
     def __str__(self):
-        return f"variable: {self.identifier}, {self.typename}"
+        return "variable: " + str(self.identifier) + "," + str(self.typename) + "\n"
 
     def toC(self):
-        if self.typename == "string":
-            return f"{self.typename.toC()} *{self.identifier};"
+        if f"{self.typename}" == "type: string":
+            return f"{self.typename.toC()} *{self.identifier.toC()};"
         else:
-            return f"{self.typename.toC()} {self.identifier};"
+            return f"{self.typename.toC()} {self.identifier.toC()};"
 
 
 class VariableDeclarationList:
@@ -381,7 +449,7 @@ class VariableDeclarationList:
         self.varlist = varlist
 
     def __str__(self):
-        return f"variable list: {self.variable} {self.varlist}"
+        return f"variable list: {self.variable} {self.varlist}\n"
 
     def toC(self):
-        return f"{self.variable.toC()}\n{self.varlist}"
+        return f"{self.variable.toC()}\n{self.varlist.toC()}"
