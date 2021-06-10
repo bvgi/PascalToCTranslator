@@ -24,7 +24,7 @@ class Program:
         converted_statement += "\nint main(void){\n"
         if not isinstance(self.variables, Empty):
             converted_statement += self.variables.toC() + "\n"
-        elif not isinstance(self.statement, Empty):
+        if not isinstance(self.statement, Empty):
             converted_statement += self.statement.toC()
         converted_statement += "return 0; \n}"
         return converted_statement
@@ -44,9 +44,9 @@ class Block:
         output = ""
         if not isinstance(self.variable_declaration_part, Empty):
             output += f"{self.variable_declaration_part.toC()}\n"
-        elif not isinstance(self.procedure_or_function, Empty):
+        if not isinstance(self.procedure_or_function, Empty):
             output += f"{self.procedure_or_function.toC()}\n"
-        elif not isinstance(self.compound_statement, Empty):
+        if not isinstance(self.compound_statement, Empty):
             output += f"{self.compound_statement.toC()}"
         return output
 
@@ -101,7 +101,7 @@ class Char:
         self.value = value
 
     def __str__(self):
-        return f"char: {self.value}"
+        return f"char: {self.value}\n"
 
     def toC(self):
         return f"\'{self.value[1:-1]}\'"
@@ -124,12 +124,12 @@ class Element:
         self.no = no
 
     def __str__(self):
-        return f"element: {self.element}"
+        return f"element: {self.element}\n"
 
     def toC(self):
-        if f"{self.element}" == "element: True":
+        if f"{self.element}" == "element: true":
             return "1"
-        elif f"{self.element}" == "element: False":
+        elif f"{self.element}" == "element: false":
             return "0"
         elif isinstance(self.element, Expression):
             return f"({self.element.toC()})"
@@ -144,7 +144,7 @@ class Sign:
         self.sign = sign
 
     def __str__(self):
-        return f"sign: {self.sign} \n"
+        return f"sign: {self.sign}"
 
     def toC(self):
         if self.sign == "div":
@@ -192,7 +192,7 @@ class Assignment:
         self.expression = expression
 
     def __str__(self):
-        return f"assignment: {self.identifier} := {self.expression}\n"
+        return f"assignment: {self.identifier} := {self.expression}"
 
     def toC(self):
         return self.identifier.toC() + " = " + str(self.expression.toC()) + ";\n"
@@ -206,7 +206,7 @@ class For:
         self.statement = statement
 
     def __str__(self):
-        return f"for_statement: for {self.assignment, self.operator, self.expression} do {self.statement}\n"
+        return f"for_statement: for {self.assignment} {self.operator} {self.expression} do {self.statement}\n"
 
     def toC(self):
         if self.operator == "to":
@@ -283,9 +283,13 @@ class ProcOrFunCall:
         self.variables = variables
 
     def __str__(self):
-        return f"procedure or function call: {self.identifier, self.variables}\n"
+        return f"procedure or function call: {self.identifier}{self.variables}\n"
 
     def toC(self):
+        if f"{self.identifier}"[0:-1] == "write":
+            self.identifier = Identifier("printf")
+        elif f"{self.identifier}"[0:-1] == "readln":
+            self.identifier = Identifier("scanf")
         if self.variables is None:
             return f"{self.identifier.toC()}();\n"
         else:
@@ -311,7 +315,7 @@ class Type:
         self.typename = typename
 
     def __str__(self):
-        return f"type: {self.typename}"
+        return f"type: {self.typename}\n"
 
     def toC(self):
         if self.typename == "integer":
@@ -413,7 +417,7 @@ class Function:
         return f"function: {self.heading}; {self.block}\n"
 
     def toC(self):
-        return self.heading.toC() + self.block.toC() + "return "+ self.heading.identifier.toC() +";\n}\n"
+        return self.heading.toC() + self.block.toC() + "return " + self.heading.identifier.toC() + ";\n}\n"
 
 
 class ProcedureOrFunction:

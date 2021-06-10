@@ -13,14 +13,14 @@ if __name__ == '__main__':
         filemode="w",
         format="%(filename)10s:%(lineno)4d:%(message)s"
     )
+
     log = logging.getLogger()
     parser = yacc.yacc(start="program", debug=True, errorlog=log)
-    test = open('tests/test3.pas', 'r')
+    test = open('tests/test1.pas', 'r')
     data = test.read()
 
     ast = parser.parse(input=data, lexer=lexer)
     print(ast)
-    # print(ast.toC())
-    file = open('tests/test3.c', 'w')
+    file = open('tests/test1.c', 'w')
     file.write(ast.toC())
     file.close()

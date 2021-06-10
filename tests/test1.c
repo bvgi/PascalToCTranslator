@@ -1,15 +1,18 @@
 #include <stdio.h> 
  
 void foo(){
+int i;
 i = 1;
 }
 
 
-int main(void) {
+int main(void){
+int i;
 while(i == 1) {
-writeln(i);
+printf(i);
 }
 do { 
+printf(i);
 i = i + 1;
 } while(i == 0);
 for(i = 0;  i <= 2 ; i++){ 

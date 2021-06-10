@@ -47,7 +47,7 @@ Rule 41    assignment_statement -> identifier ASSIGNMENT expression
 Rule 42    if_statement -> IF expression THEN compound_statement
 Rule 43    if_statement -> IF expression THEN compound_statement ELSE compound_statement
 Rule 44    while_statement -> WHILE expression DO statement
-Rule 45    repeat_statement -> REPEAT statement UNTIL expression
+Rule 45    repeat_statement -> REPEAT statement_sequence UNTIL expression
 Rule 46    for_statement -> FOR assignment_statement TO expression DO statement
 Rule 47    for_statement -> FOR assignment_statement DOWNTO expression DO statement
 Rule 48    expression -> expression and_or expression_m
@@ -167,8 +167,8 @@ program              : 0
 real                 : 69
 repeat_statement     : 34
 sign                 : 51
-statement            : 28 29 44 45 46 47
-statement_sequence   : 27 28
+statement            : 28 29 44 46 47
+statement_sequence   : 27 28 45
 string               : 72
 type                 : 8 19 20 23
 variable_declaration : 6 7
@@ -234,7 +234,6 @@ state 4
     AND             reduce using rule 77 (identifier -> IDENTIFIER .)
     OR              reduce using rule 77 (identifier -> IDENTIFIER .)
     DO              reduce using rule 77 (identifier -> IDENTIFIER .)
-    UNTIL           reduce using rule 77 (identifier -> IDENTIFIER .)
     TO              reduce using rule 77 (identifier -> IDENTIFIER .)
     DOWNTO          reduce using rule 77 (identifier -> IDENTIFIER .)
     RPAREN          reduce using rule 77 (identifier -> IDENTIFIER .)
@@ -435,7 +434,7 @@ state 22
     (42) if_statement -> . IF expression THEN compound_statement
     (43) if_statement -> . IF expression THEN compound_statement ELSE compound_statement
     (44) while_statement -> . WHILE expression DO statement
-    (45) repeat_statement -> . REPEAT statement UNTIL expression
+    (45) repeat_statement -> . REPEAT statement_sequence UNTIL expression
     (46) for_statement -> . FOR assignment_statement TO expression DO statement
     (47) for_statement -> . FOR assignment_statement DOWNTO expression DO statement
     (37) procedure_or_function_call -> . identifier
@@ -592,7 +591,6 @@ state 33
     (30) statement -> compound_statement .
 
     SEMICOLON       reduce using rule 30 (statement -> compound_statement .)
-    UNTIL           reduce using rule 30 (statement -> compound_statement .)
 
 
 state 34
@@ -600,7 +598,6 @@ state 34
     (31) statement -> assignment_statement .
 
     SEMICOLON       reduce using rule 31 (statement -> assignment_statement .)
-    UNTIL           reduce using rule 31 (statement -> assignment_statement .)
 
 
 state 35
@@ -608,7 +605,6 @@ state 35
     (32) statement -> if_statement .
 
     SEMICOLON       reduce using rule 32 (statement -> if_statement .)
-    UNTIL           reduce using rule 32 (statement -> if_statement .)
 
 
 state 36
@@ -616,7 +612,6 @@ state 36
     (33) statement -> while_statement .
 
     SEMICOLON       reduce using rule 33 (statement -> while_statement .)
-    UNTIL           reduce using rule 33 (statement -> while_statement .)
 
 
 state 37
@@ -624,7 +619,6 @@ state 37
     (34) statement -> repeat_statement .
 
     SEMICOLON       reduce using rule 34 (statement -> repeat_statement .)
-    UNTIL           reduce using rule 34 (statement -> repeat_statement .)
 
 
 state 38
@@ -632,7 +626,6 @@ state 38
     (35) statement -> for_statement .
 
     SEMICOLON       reduce using rule 35 (statement -> for_statement .)
-    UNTIL           reduce using rule 35 (statement -> for_statement .)
 
 
 state 39
@@ -640,7 +633,6 @@ state 39
     (36) statement -> procedure_or_function_call .
 
     SEMICOLON       reduce using rule 36 (statement -> procedure_or_function_call .)
-    UNTIL           reduce using rule 36 (statement -> procedure_or_function_call .)
 
 
 state 40
@@ -651,7 +643,6 @@ state 40
 
     ASSIGNMENT      shift and go to state 60
     SEMICOLON       reduce using rule 37 (procedure_or_function_call -> identifier .)
-    UNTIL           reduce using rule 37 (procedure_or_function_call -> identifier .)
     LPAREN          shift and go to state 61
 
 
@@ -778,7 +769,9 @@ state 42
 
 state 43
 
-    (45) repeat_statement -> REPEAT . statement UNTIL expression
+    (45) repeat_statement -> REPEAT . statement_sequence UNTIL expression
+    (28) statement_sequence -> . statement SEMICOLON statement_sequence
+    (29) statement_sequence -> . statement SEMICOLON
     (30) statement -> . compound_statement
     (31) statement -> . assignment_statement
     (32) statement -> . if_statement
@@ -791,7 +784,7 @@ state 43
     (42) if_statement -> . IF expression THEN compound_statement
     (43) if_statement -> . IF expression THEN compound_statement ELSE compound_statement
     (44) while_statement -> . WHILE expression DO statement
-    (45) repeat_statement -> . REPEAT statement UNTIL expression
+    (45) repeat_statement -> . REPEAT statement_sequence UNTIL expression
     (46) for_statement -> . FOR assignment_statement TO expression DO statement
     (47) for_statement -> . FOR assignment_statement DOWNTO expression DO statement
     (37) procedure_or_function_call -> . identifier
@@ -805,7 +798,8 @@ state 43
     FOR             shift and go to state 44
     IDENTIFIER      shift and go to state 4
 
-    statement                      shift and go to state 80
+    statement_sequence             shift and go to state 80
+    statement                      shift and go to state 32
     compound_statement             shift and go to state 33
     assignment_statement           shift and go to state 34
     if_statement                   shift and go to state 35
@@ -978,7 +972,6 @@ state 58
 
     DOT             reduce using rule 27 (compound_statement -> BEGIN statement_sequence END .)
     SEMICOLON       reduce using rule 27 (compound_statement -> BEGIN statement_sequence END .)
-    UNTIL           reduce using rule 27 (compound_statement -> BEGIN statement_sequence END .)
     ELSE            reduce using rule 27 (compound_statement -> BEGIN statement_sequence END .)
 
 
@@ -1000,7 +993,7 @@ state 59
     (42) if_statement -> . IF expression THEN compound_statement
     (43) if_statement -> . IF expression THEN compound_statement ELSE compound_statement
     (44) while_statement -> . WHILE expression DO statement
-    (45) repeat_statement -> . REPEAT statement UNTIL expression
+    (45) repeat_statement -> . REPEAT statement_sequence UNTIL expression
     (46) for_statement -> . FOR assignment_statement TO expression DO statement
     (47) for_statement -> . FOR assignment_statement DOWNTO expression DO statement
     (37) procedure_or_function_call -> . identifier
@@ -1008,6 +1001,7 @@ state 59
     (77) identifier -> . IDENTIFIER
 
     END             reduce using rule 29 (statement_sequence -> statement SEMICOLON .)
+    UNTIL           reduce using rule 29 (statement_sequence -> statement SEMICOLON .)
     BEGIN           shift and go to state 22
     IF              shift and go to state 41
     WHILE           shift and go to state 42
@@ -1074,7 +1068,6 @@ state 60
     AND             reduce using rule 1 (empty -> .)
     OR              reduce using rule 1 (empty -> .)
     SEMICOLON       reduce using rule 1 (empty -> .)
-    UNTIL           reduce using rule 1 (empty -> .)
     TO              reduce using rule 1 (empty -> .)
     DOWNTO          reduce using rule 1 (empty -> .)
 
@@ -1189,7 +1182,6 @@ state 63
     OR              reduce using rule 49 (expression -> expression_m .)
     DO              reduce using rule 49 (expression -> expression_m .)
     SEMICOLON       reduce using rule 49 (expression -> expression_m .)
-    UNTIL           reduce using rule 49 (expression -> expression_m .)
     TO              reduce using rule 49 (expression -> expression_m .)
     DOWNTO          reduce using rule 49 (expression -> expression_m .)
     RPAREN          reduce using rule 49 (expression -> expression_m .)
@@ -1230,7 +1222,6 @@ state 64
     OR              reduce using rule 50 (expression_m -> element .)
     DO              reduce using rule 50 (expression_m -> element .)
     SEMICOLON       reduce using rule 50 (expression_m -> element .)
-    UNTIL           reduce using rule 50 (expression_m -> element .)
     TO              reduce using rule 50 (expression_m -> element .)
     DOWNTO          reduce using rule 50 (expression_m -> element .)
     RPAREN          reduce using rule 50 (expression_m -> element .)
@@ -1258,7 +1249,6 @@ state 65
     OR              reduce using rule 66 (element -> BOOLEAN .)
     DO              reduce using rule 66 (element -> BOOLEAN .)
     SEMICOLON       reduce using rule 66 (element -> BOOLEAN .)
-    UNTIL           reduce using rule 66 (element -> BOOLEAN .)
     TO              reduce using rule 66 (element -> BOOLEAN .)
     DOWNTO          reduce using rule 66 (element -> BOOLEAN .)
     RPAREN          reduce using rule 66 (element -> BOOLEAN .)
@@ -1311,7 +1301,6 @@ state 66
     OR              reduce using rule 1 (empty -> .)
     DO              reduce using rule 1 (empty -> .)
     SEMICOLON       reduce using rule 1 (empty -> .)
-    UNTIL           reduce using rule 1 (empty -> .)
     TO              reduce using rule 1 (empty -> .)
     DOWNTO          reduce using rule 1 (empty -> .)
     RPAREN          reduce using rule 1 (empty -> .)
@@ -1348,7 +1337,6 @@ state 67
     OR              reduce using rule 68 (element -> identifier .)
     DO              reduce using rule 68 (element -> identifier .)
     SEMICOLON       reduce using rule 68 (element -> identifier .)
-    UNTIL           reduce using rule 68 (element -> identifier .)
     TO              reduce using rule 68 (element -> identifier .)
     DOWNTO          reduce using rule 68 (element -> identifier .)
     RPAREN          reduce using rule 68 (element -> identifier .)
@@ -1377,7 +1365,6 @@ state 68
     OR              reduce using rule 69 (element -> real .)
     DO              reduce using rule 69 (element -> real .)
     SEMICOLON       reduce using rule 69 (element -> real .)
-    UNTIL           reduce using rule 69 (element -> real .)
     TO              reduce using rule 69 (element -> real .)
     DOWNTO          reduce using rule 69 (element -> real .)
     RPAREN          reduce using rule 69 (element -> real .)
@@ -1405,7 +1392,6 @@ state 69
     OR              reduce using rule 70 (element -> integer .)
     DO              reduce using rule 70 (element -> integer .)
     SEMICOLON       reduce using rule 70 (element -> integer .)
-    UNTIL           reduce using rule 70 (element -> integer .)
     TO              reduce using rule 70 (element -> integer .)
     DOWNTO          reduce using rule 70 (element -> integer .)
     RPAREN          reduce using rule 70 (element -> integer .)
@@ -1433,7 +1419,6 @@ state 70
     OR              reduce using rule 71 (element -> char .)
     DO              reduce using rule 71 (element -> char .)
     SEMICOLON       reduce using rule 71 (element -> char .)
-    UNTIL           reduce using rule 71 (element -> char .)
     TO              reduce using rule 71 (element -> char .)
     DOWNTO          reduce using rule 71 (element -> char .)
     RPAREN          reduce using rule 71 (element -> char .)
@@ -1461,7 +1446,6 @@ state 71
     OR              reduce using rule 72 (element -> string .)
     DO              reduce using rule 72 (element -> string .)
     SEMICOLON       reduce using rule 72 (element -> string .)
-    UNTIL           reduce using rule 72 (element -> string .)
     TO              reduce using rule 72 (element -> string .)
     DOWNTO          reduce using rule 72 (element -> string .)
     RPAREN          reduce using rule 72 (element -> string .)
@@ -1549,7 +1533,6 @@ state 73
     OR              reduce using rule 74 (element -> function_call .)
     DO              reduce using rule 74 (element -> function_call .)
     SEMICOLON       reduce using rule 74 (element -> function_call .)
-    UNTIL           reduce using rule 74 (element -> function_call .)
     TO              reduce using rule 74 (element -> function_call .)
     DOWNTO          reduce using rule 74 (element -> function_call .)
     RPAREN          reduce using rule 74 (element -> function_call .)
@@ -1577,7 +1560,6 @@ state 74
     OR              reduce using rule 75 (element -> empty .)
     DO              reduce using rule 75 (element -> empty .)
     SEMICOLON       reduce using rule 75 (element -> empty .)
-    UNTIL           reduce using rule 75 (element -> empty .)
     TO              reduce using rule 75 (element -> empty .)
     DOWNTO          reduce using rule 75 (element -> empty .)
     RPAREN          reduce using rule 75 (element -> empty .)
@@ -1605,7 +1587,6 @@ state 75
     OR              reduce using rule 78 (real -> REAL .)
     DO              reduce using rule 78 (real -> REAL .)
     SEMICOLON       reduce using rule 78 (real -> REAL .)
-    UNTIL           reduce using rule 78 (real -> REAL .)
     TO              reduce using rule 78 (real -> REAL .)
     DOWNTO          reduce using rule 78 (real -> REAL .)
     RPAREN          reduce using rule 78 (real -> REAL .)
@@ -1633,7 +1614,6 @@ state 76
     OR              reduce using rule 79 (integer -> INTEGER .)
     DO              reduce using rule 79 (integer -> INTEGER .)
     SEMICOLON       reduce using rule 79 (integer -> INTEGER .)
-    UNTIL           reduce using rule 79 (integer -> INTEGER .)
     TO              reduce using rule 79 (integer -> INTEGER .)
     DOWNTO          reduce using rule 79 (integer -> INTEGER .)
     RPAREN          reduce using rule 79 (integer -> INTEGER .)
@@ -1661,7 +1641,6 @@ state 77
     OR              reduce using rule 81 (char -> CHAR .)
     DO              reduce using rule 81 (char -> CHAR .)
     SEMICOLON       reduce using rule 81 (char -> CHAR .)
-    UNTIL           reduce using rule 81 (char -> CHAR .)
     TO              reduce using rule 81 (char -> CHAR .)
     DOWNTO          reduce using rule 81 (char -> CHAR .)
     RPAREN          reduce using rule 81 (char -> CHAR .)
@@ -1689,7 +1668,6 @@ state 78
     OR              reduce using rule 80 (string -> STRING .)
     DO              reduce using rule 80 (string -> STRING .)
     SEMICOLON       reduce using rule 80 (string -> STRING .)
-    UNTIL           reduce using rule 80 (string -> STRING .)
     TO              reduce using rule 80 (string -> STRING .)
     DOWNTO          reduce using rule 80 (string -> STRING .)
     RPAREN          reduce using rule 80 (string -> STRING .)
@@ -1711,7 +1689,7 @@ state 79
 
 state 80
 
-    (45) repeat_statement -> REPEAT statement . UNTIL expression
+    (45) repeat_statement -> REPEAT statement_sequence . UNTIL expression
 
     UNTIL           shift and go to state 115
 
@@ -1793,6 +1771,7 @@ state 90
     (28) statement_sequence -> statement SEMICOLON statement_sequence .
 
     END             reduce using rule 28 (statement_sequence -> statement SEMICOLON statement_sequence .)
+    UNTIL           reduce using rule 28 (statement_sequence -> statement SEMICOLON statement_sequence .)
 
 
 state 91
@@ -1803,7 +1782,6 @@ state 91
     (53) and_or -> . OR
 
     SEMICOLON       reduce using rule 41 (assignment_statement -> identifier ASSIGNMENT expression .)
-    UNTIL           reduce using rule 41 (assignment_statement -> identifier ASSIGNMENT expression .)
     TO              reduce using rule 41 (assignment_statement -> identifier ASSIGNMENT expression .)
     DOWNTO          reduce using rule 41 (assignment_statement -> identifier ASSIGNMENT expression .)
     AND             shift and go to state 96
@@ -1892,7 +1870,6 @@ state 95
     OR              reduce using rule 1 (empty -> .)
     DO              reduce using rule 1 (empty -> .)
     SEMICOLON       reduce using rule 1 (empty -> .)
-    UNTIL           reduce using rule 1 (empty -> .)
     TO              reduce using rule 1 (empty -> .)
     DOWNTO          reduce using rule 1 (empty -> .)
     RPAREN          reduce using rule 1 (empty -> .)
@@ -1937,7 +1914,6 @@ state 96
     OR              reduce using rule 52 (and_or -> AND .)
     DO              reduce using rule 52 (and_or -> AND .)
     SEMICOLON       reduce using rule 52 (and_or -> AND .)
-    UNTIL           reduce using rule 52 (and_or -> AND .)
     TO              reduce using rule 52 (and_or -> AND .)
     DOWNTO          reduce using rule 52 (and_or -> AND .)
     RPAREN          reduce using rule 52 (and_or -> AND .)
@@ -1973,7 +1949,6 @@ state 97
     OR              reduce using rule 53 (and_or -> OR .)
     DO              reduce using rule 53 (and_or -> OR .)
     SEMICOLON       reduce using rule 53 (and_or -> OR .)
-    UNTIL           reduce using rule 53 (and_or -> OR .)
     TO              reduce using rule 53 (and_or -> OR .)
     DOWNTO          reduce using rule 53 (and_or -> OR .)
     RPAREN          reduce using rule 53 (and_or -> OR .)
@@ -2026,7 +2001,6 @@ state 98
     OR              reduce using rule 1 (empty -> .)
     DO              reduce using rule 1 (empty -> .)
     SEMICOLON       reduce using rule 1 (empty -> .)
-    UNTIL           reduce using rule 1 (empty -> .)
     TO              reduce using rule 1 (empty -> .)
     DOWNTO          reduce using rule 1 (empty -> .)
     RPAREN          reduce using rule 1 (empty -> .)
@@ -2070,7 +2044,6 @@ state 99
     OR              reduce using rule 54 (sign -> PLUS .)
     DO              reduce using rule 54 (sign -> PLUS .)
     SEMICOLON       reduce using rule 54 (sign -> PLUS .)
-    UNTIL           reduce using rule 54 (sign -> PLUS .)
     TO              reduce using rule 54 (sign -> PLUS .)
     DOWNTO          reduce using rule 54 (sign -> PLUS .)
     RPAREN          reduce using rule 54 (sign -> PLUS .)
@@ -2106,7 +2079,6 @@ state 100
     OR              reduce using rule 55 (sign -> MINUS .)
     DO              reduce using rule 55 (sign -> MINUS .)
     SEMICOLON       reduce using rule 55 (sign -> MINUS .)
-    UNTIL           reduce using rule 55 (sign -> MINUS .)
     TO              reduce using rule 55 (sign -> MINUS .)
     DOWNTO          reduce using rule 55 (sign -> MINUS .)
     RPAREN          reduce using rule 55 (sign -> MINUS .)
@@ -2142,7 +2114,6 @@ state 101
     OR              reduce using rule 56 (sign -> INT_DIV .)
     DO              reduce using rule 56 (sign -> INT_DIV .)
     SEMICOLON       reduce using rule 56 (sign -> INT_DIV .)
-    UNTIL           reduce using rule 56 (sign -> INT_DIV .)
     TO              reduce using rule 56 (sign -> INT_DIV .)
     DOWNTO          reduce using rule 56 (sign -> INT_DIV .)
     RPAREN          reduce using rule 56 (sign -> INT_DIV .)
@@ -2178,7 +2149,6 @@ state 102
     OR              reduce using rule 57 (sign -> FLOAT_DIV .)
     DO              reduce using rule 57 (sign -> FLOAT_DIV .)
     SEMICOLON       reduce using rule 57 (sign -> FLOAT_DIV .)
-    UNTIL           reduce using rule 57 (sign -> FLOAT_DIV .)
     TO              reduce using rule 57 (sign -> FLOAT_DIV .)
     DOWNTO          reduce using rule 57 (sign -> FLOAT_DIV .)
     RPAREN          reduce using rule 57 (sign -> FLOAT_DIV .)
@@ -2214,7 +2184,6 @@ state 103
     OR              reduce using rule 58 (sign -> MULTIPLY .)
     DO              reduce using rule 58 (sign -> MULTIPLY .)
     SEMICOLON       reduce using rule 58 (sign -> MULTIPLY .)
-    UNTIL           reduce using rule 58 (sign -> MULTIPLY .)
     TO              reduce using rule 58 (sign -> MULTIPLY .)
     DOWNTO          reduce using rule 58 (sign -> MULTIPLY .)
     RPAREN          reduce using rule 58 (sign -> MULTIPLY .)
@@ -2250,7 +2219,6 @@ state 104
     OR              reduce using rule 59 (sign -> MOD .)
     DO              reduce using rule 59 (sign -> MOD .)
     SEMICOLON       reduce using rule 59 (sign -> MOD .)
-    UNTIL           reduce using rule 59 (sign -> MOD .)
     TO              reduce using rule 59 (sign -> MOD .)
     DOWNTO          reduce using rule 59 (sign -> MOD .)
     RPAREN          reduce using rule 59 (sign -> MOD .)
@@ -2286,7 +2254,6 @@ state 105
     OR              reduce using rule 60 (sign -> EQ .)
     DO              reduce using rule 60 (sign -> EQ .)
     SEMICOLON       reduce using rule 60 (sign -> EQ .)
-    UNTIL           reduce using rule 60 (sign -> EQ .)
     TO              reduce using rule 60 (sign -> EQ .)
     DOWNTO          reduce using rule 60 (sign -> EQ .)
     RPAREN          reduce using rule 60 (sign -> EQ .)
@@ -2322,7 +2289,6 @@ state 106
     OR              reduce using rule 61 (sign -> NEQ .)
     DO              reduce using rule 61 (sign -> NEQ .)
     SEMICOLON       reduce using rule 61 (sign -> NEQ .)
-    UNTIL           reduce using rule 61 (sign -> NEQ .)
     TO              reduce using rule 61 (sign -> NEQ .)
     DOWNTO          reduce using rule 61 (sign -> NEQ .)
     RPAREN          reduce using rule 61 (sign -> NEQ .)
@@ -2358,7 +2324,6 @@ state 107
     OR              reduce using rule 62 (sign -> LT .)
     DO              reduce using rule 62 (sign -> LT .)
     SEMICOLON       reduce using rule 62 (sign -> LT .)
-    UNTIL           reduce using rule 62 (sign -> LT .)
     TO              reduce using rule 62 (sign -> LT .)
     DOWNTO          reduce using rule 62 (sign -> LT .)
     RPAREN          reduce using rule 62 (sign -> LT .)
@@ -2394,7 +2359,6 @@ state 108
     OR              reduce using rule 63 (sign -> GT .)
     DO              reduce using rule 63 (sign -> GT .)
     SEMICOLON       reduce using rule 63 (sign -> GT .)
-    UNTIL           reduce using rule 63 (sign -> GT .)
     TO              reduce using rule 63 (sign -> GT .)
     DOWNTO          reduce using rule 63 (sign -> GT .)
     RPAREN          reduce using rule 63 (sign -> GT .)
@@ -2430,7 +2394,6 @@ state 109
     OR              reduce using rule 64 (sign -> LTE .)
     DO              reduce using rule 64 (sign -> LTE .)
     SEMICOLON       reduce using rule 64 (sign -> LTE .)
-    UNTIL           reduce using rule 64 (sign -> LTE .)
     TO              reduce using rule 64 (sign -> LTE .)
     DOWNTO          reduce using rule 64 (sign -> LTE .)
     RPAREN          reduce using rule 64 (sign -> LTE .)
@@ -2466,7 +2429,6 @@ state 110
     OR              reduce using rule 65 (sign -> GTE .)
     DO              reduce using rule 65 (sign -> GTE .)
     SEMICOLON       reduce using rule 65 (sign -> GTE .)
-    UNTIL           reduce using rule 65 (sign -> GTE .)
     TO              reduce using rule 65 (sign -> GTE .)
     DOWNTO          reduce using rule 65 (sign -> GTE .)
     RPAREN          reduce using rule 65 (sign -> GTE .)
@@ -2494,7 +2456,6 @@ state 111
     OR              reduce using rule 67 (element -> NOT element .)
     DO              reduce using rule 67 (element -> NOT element .)
     SEMICOLON       reduce using rule 67 (element -> NOT element .)
-    UNTIL           reduce using rule 67 (element -> NOT element .)
     TO              reduce using rule 67 (element -> NOT element .)
     DOWNTO          reduce using rule 67 (element -> NOT element .)
     RPAREN          reduce using rule 67 (element -> NOT element .)
@@ -2593,7 +2554,7 @@ state 114
     (42) if_statement -> . IF expression THEN compound_statement
     (43) if_statement -> . IF expression THEN compound_statement ELSE compound_statement
     (44) while_statement -> . WHILE expression DO statement
-    (45) repeat_statement -> . REPEAT statement UNTIL expression
+    (45) repeat_statement -> . REPEAT statement_sequence UNTIL expression
     (46) for_statement -> . FOR assignment_statement TO expression DO statement
     (47) for_statement -> . FOR assignment_statement DOWNTO expression DO statement
     (37) procedure_or_function_call -> . identifier
@@ -2619,7 +2580,7 @@ state 114
 
 state 115
 
-    (45) repeat_statement -> REPEAT statement UNTIL . expression
+    (45) repeat_statement -> REPEAT statement_sequence UNTIL . expression
     (48) expression -> . expression and_or expression_m
     (49) expression -> . expression_m
     (50) expression_m -> . element
@@ -2665,7 +2626,6 @@ state 115
     AND             reduce using rule 1 (empty -> .)
     OR              reduce using rule 1 (empty -> .)
     SEMICOLON       reduce using rule 1 (empty -> .)
-    UNTIL           reduce using rule 1 (empty -> .)
 
     expression                     shift and go to state 131
     expression_m                   shift and go to state 63
@@ -2855,7 +2815,6 @@ state 123
     (38) procedure_or_function_call -> identifier LPAREN variables_list RPAREN .
 
     SEMICOLON       reduce using rule 38 (procedure_or_function_call -> identifier LPAREN variables_list RPAREN .)
-    UNTIL           reduce using rule 38 (procedure_or_function_call -> identifier LPAREN variables_list RPAREN .)
 
 
 state 124
@@ -2925,7 +2884,6 @@ state 125
     (43) if_statement -> IF expression THEN compound_statement . ELSE compound_statement
 
     SEMICOLON       reduce using rule 42 (if_statement -> IF expression THEN compound_statement .)
-    UNTIL           reduce using rule 42 (if_statement -> IF expression THEN compound_statement .)
     ELSE            shift and go to state 138
 
 
@@ -2951,7 +2909,6 @@ state 126
     OR              reduce using rule 48 (expression -> expression and_or expression_m .)
     DO              reduce using rule 48 (expression -> expression and_or expression_m .)
     SEMICOLON       reduce using rule 48 (expression -> expression and_or expression_m .)
-    UNTIL           reduce using rule 48 (expression -> expression and_or expression_m .)
     TO              reduce using rule 48 (expression -> expression and_or expression_m .)
     DOWNTO          reduce using rule 48 (expression -> expression and_or expression_m .)
     RPAREN          reduce using rule 48 (expression -> expression and_or expression_m .)
@@ -2992,7 +2949,6 @@ state 127
     OR              reduce using rule 51 (expression_m -> expression_m sign element .)
     DO              reduce using rule 51 (expression_m -> expression_m sign element .)
     SEMICOLON       reduce using rule 51 (expression_m -> expression_m sign element .)
-    UNTIL           reduce using rule 51 (expression_m -> expression_m sign element .)
     TO              reduce using rule 51 (expression_m -> expression_m sign element .)
     DOWNTO          reduce using rule 51 (expression_m -> expression_m sign element .)
     RPAREN          reduce using rule 51 (expression_m -> expression_m sign element .)
@@ -3029,7 +2985,6 @@ state 129
     OR              reduce using rule 73 (element -> LPAREN expression RPAREN .)
     DO              reduce using rule 73 (element -> LPAREN expression RPAREN .)
     SEMICOLON       reduce using rule 73 (element -> LPAREN expression RPAREN .)
-    UNTIL           reduce using rule 73 (element -> LPAREN expression RPAREN .)
     TO              reduce using rule 73 (element -> LPAREN expression RPAREN .)
     DOWNTO          reduce using rule 73 (element -> LPAREN expression RPAREN .)
     RPAREN          reduce using rule 73 (element -> LPAREN expression RPAREN .)
@@ -3041,18 +2996,16 @@ state 130
     (44) while_statement -> WHILE expression DO statement .
 
     SEMICOLON       reduce using rule 44 (while_statement -> WHILE expression DO statement .)
-    UNTIL           reduce using rule 44 (while_statement -> WHILE expression DO statement .)
 
 
 state 131
 
-    (45) repeat_statement -> REPEAT statement UNTIL expression .
+    (45) repeat_statement -> REPEAT statement_sequence UNTIL expression .
     (48) expression -> expression . and_or expression_m
     (52) and_or -> . AND
     (53) and_or -> . OR
 
-    SEMICOLON       reduce using rule 45 (repeat_statement -> REPEAT statement UNTIL expression .)
-    UNTIL           reduce using rule 45 (repeat_statement -> REPEAT statement UNTIL expression .)
+    SEMICOLON       reduce using rule 45 (repeat_statement -> REPEAT statement_sequence UNTIL expression .)
     AND             shift and go to state 96
     OR              shift and go to state 97
 
@@ -3160,7 +3113,6 @@ state 139
     OR              reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
     DO              reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
     SEMICOLON       reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
-    UNTIL           reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
     TO              reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
     DOWNTO          reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
     RPAREN          reduce using rule 76 (function_call -> identifier LPAREN variables_list RPAREN .)
@@ -3182,7 +3134,7 @@ state 140
     (42) if_statement -> . IF expression THEN compound_statement
     (43) if_statement -> . IF expression THEN compound_statement ELSE compound_statement
     (44) while_statement -> . WHILE expression DO statement
-    (45) repeat_statement -> . REPEAT statement UNTIL expression
+    (45) repeat_statement -> . REPEAT statement_sequence UNTIL expression
     (46) for_statement -> . FOR assignment_statement TO expression DO statement
     (47) for_statement -> . FOR assignment_statement DOWNTO expression DO statement
     (37) procedure_or_function_call -> . identifier
@@ -3221,7 +3173,7 @@ state 141
     (42) if_statement -> . IF expression THEN compound_statement
     (43) if_statement -> . IF expression THEN compound_statement ELSE compound_statement
     (44) while_statement -> . WHILE expression DO statement
-    (45) repeat_statement -> . REPEAT statement UNTIL expression
+    (45) repeat_statement -> . REPEAT statement_sequence UNTIL expression
     (46) for_statement -> . FOR assignment_statement TO expression DO statement
     (47) for_statement -> . FOR assignment_statement DOWNTO expression DO statement
     (37) procedure_or_function_call -> . identifier
@@ -3257,7 +3209,6 @@ state 143
     (43) if_statement -> IF expression THEN compound_statement ELSE compound_statement .
 
     SEMICOLON       reduce using rule 43 (if_statement -> IF expression THEN compound_statement ELSE compound_statement .)
-    UNTIL           reduce using rule 43 (if_statement -> IF expression THEN compound_statement ELSE compound_statement .)
 
 
 state 144
@@ -3265,7 +3216,6 @@ state 144
     (46) for_statement -> FOR assignment_statement TO expression DO statement .
 
     SEMICOLON       reduce using rule 46 (for_statement -> FOR assignment_statement TO expression DO statement .)
-    UNTIL           reduce using rule 46 (for_statement -> FOR assignment_statement TO expression DO statement .)
 
 
 state 145
@@ -3273,5 +3223,4 @@ state 145
     (47) for_statement -> FOR assignment_statement DOWNTO expression DO statement .
 
     SEMICOLON       reduce using rule 47 (for_statement -> FOR assignment_statement DOWNTO expression DO statement .)
-    UNTIL           reduce using rule 47 (for_statement -> FOR assignment_statement DOWNTO expression DO statement .)
 

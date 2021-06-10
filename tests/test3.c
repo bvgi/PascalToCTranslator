@@ -15,5 +15,9 @@ int main(void){
 float a;
 int b;
 int c;
+a = 22.5f;
+a = a + summation(10);
+b = 1;
+c = 0;
 return 0; 
 }

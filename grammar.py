@@ -167,14 +167,6 @@ def p_statement(p):
     p[0] = p[1]
 
 
-# def p_statement(p):
-#     '''
-#         statement : no_if_statement
-#                 | if_statement
-#     '''
-#     p[0] = p[1]
-
-
 def p_procedure_or_function_call(p):
     '''
         procedure_or_function_call : identifier
@@ -195,13 +187,6 @@ def p_variables_list(p):
         p[0] = p[1]
     else:
         p[0] = VariablesList(p[1], p[3])
-
-
-# def p_variable(p):
-#     '''
-#         variable : expression
-#     '''
-#     p[0] = Node("parameter", p[1])
 
 
 def p_assignment_statement(p):
@@ -229,9 +214,9 @@ def p_while_statement(p):
     p[0] = While(p[2], p[4])
 
 
-def p_repeat_statement(p):    # TODO : wiele statement
+def p_repeat_statement(p):
     '''
-        repeat_statement : REPEAT statement UNTIL expression
+        repeat_statement : REPEAT statement_sequence UNTIL expression
     '''
     p[0] = Repeat(p[2], p[4])
 
@@ -314,34 +299,34 @@ def p_element(p):
 
 
 def p_function_call(p):
-    """
+    '''
         function_call : identifier LPAREN variables_list RPAREN
-    """
+    '''
     p[0] = FunctionCall(p[1], p[3])
 
 
 def p_identifier(p):
-    """ identifier : IDENTIFIER """
+    ''' identifier : IDENTIFIER '''
     p[0] = Identifier(str(p[1]).lower())
 
 
 def p_real(p):
-    """ real : REAL """
+    ''' real : REAL '''
     p[0] = Real(p[1])
 
 
 def p_integer(p):
-    """ integer : INTEGER """
+    ''' integer : INTEGER '''
     p[0] = Integer(p[1])
 
 
 def p_string(p):
-    """ string : STRING """
+    ''' string : STRING '''
     p[0] = String(p[1])
 
 
 def p_char(p):
-    """ char : CHAR """
+    ''' char : CHAR '''
     p[0] = Char(p[1])
 
 
