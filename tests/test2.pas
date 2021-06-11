@@ -1,4 +1,4 @@
-program test3;
+program test2;
         var
             A : integer;
 
