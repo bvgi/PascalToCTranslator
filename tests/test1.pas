@@ -1,30 +1,31 @@
-program TEST;
+program test1;
 var
 i : integer;
-    procedure foo;
-    var
-     i: integer;
+k : integer;
+procedure foo;
+var
+    j: integer;
+begin
+    j := 1;
+    repeat
+        write(j);
+        j := j + 1;
+    until j = 3;
+end;
+begin
+    foo;
+    i := 0;
+    while i <> 4 do
     begin
-        i := 1;
+        write(i);
+        i := i + 1;
     end;
+    for k := 0 to 2 do
     begin
-        while i = 1 do
-        begin
-            write(i);
-        end;
-        repeat
-            write(i);
-            i := i + 1;
-        until i = 0;
-        for i := 0 to 2 do
-        begin
-            if i = 1 then
-            begin
-                i := 0;
-            end
-            else
-            begin
-                i := 1;
-            end;
-        end;
-    end.
+        write('Hello');
+    end;
+    for k := 4 downto 0 do
+    begin
+        write('World');
+    end;
+end.

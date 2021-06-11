@@ -16,7 +16,7 @@ temp = fibonacci2;
 fibonacci2 = fibonacci1 + fibonacci2;
 fibonacci1 = temp;
 count = count + 1;
-} while(count == 10);
+} while(!(count == 10));
 printf("\n");
 return 0; 
 }

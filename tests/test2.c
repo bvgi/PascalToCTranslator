@@ -1,11 +1,11 @@
 #include <stdio.h> 
  
 void scopeinner(){
-int a;
-a = 10;
-writeln(a);
-if(num == 1){
-summation = 1;
+int ten;
+ten = 10;
+printf(ten);
+if(ten == 10){
+ten = 1;
 }
 }
 
@@ -23,10 +23,9 @@ return summation;
 int main(void){
 int a;
 a = 20;
-writeln(a + 1 * 2);
+printf(a + 1 * 2);
 scopeinner();
 a = a + summation(10);
-writeln(a);
-writeln(a);
+printf(a);
 return 0; 
 }

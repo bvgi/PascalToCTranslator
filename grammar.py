@@ -106,7 +106,7 @@ def p_function_heading(p):
 
 
 def p_parameters_list(p):
-    '''parameters_list : parameter COMMA parameters_list
+    '''parameters_list : parameter SEMICOLON parameters_list
 		                | parameter
     '''
     if len(p) == 4:

@@ -16,11 +16,13 @@ if __name__ == '__main__':
 
     log = logging.getLogger()
     parser = yacc.yacc(start="program", debug=True, errorlog=log)
-    test = open('tests/test1.pas', 'r')
+    test = open(str(sys.argv[1]), 'r')
+    # test = open('tests/test1.pas', 'r')
     data = test.read()
 
     ast = parser.parse(input=data, lexer=lexer)
     print(ast)
-    file = open('tests/test1.c', 'w')
+    file = open(str(sys.argv[2]), 'w')
+    # file = open('tests/test1.c', 'w')
     file.write(ast.toC())
     file.close()

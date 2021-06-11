@@ -127,9 +127,9 @@ class Element:
         return f"element: {self.element}\n"
 
     def toC(self):
-        if f"{self.element}" == "element: true":
+        if f"{self.element}"[0:-1] == "element: true":
             return "1"
-        elif f"{self.element}" == "element: false":
+        elif f"{self.element}"[0:-1] == "element: false":
             return "0"
         elif isinstance(self.element, Expression):
             return f"({self.element.toC()})"
@@ -210,9 +210,9 @@ class For:
 
     def toC(self):
         if self.operator == "to":
-            return f"for({self.assignment.toC()[:-1]}  {self.assignment.identifier.toC()} <= {self.expression.toC()} ; {self.assignment.identifier.toC()}++)" + "{ \n" + self.statement.toC() + "}\n"
+            return f"for({self.assignment.toC()[:-1]} {self.assignment.identifier.toC()} <= {self.expression.toC()}; {self.assignment.identifier.toC()}++)" + "{ \n" + self.statement.toC() + "}\n"
         else:
-            return f"for({self.assignment.toC()} ; {self.assignment.identifier} <= {self.assignment.expression.toC()} ; {self.assignment.identifier}--)" + "{ \n" + self.statement.toC() + "\n}\n"
+            return f"for({self.assignment.toC()[:-1]} {self.assignment.identifier.toC()} >= {self.expression.toC()}; {self.assignment.identifier.toC()}--)" + "{ \n" + self.statement.toC() + "\n}\n"
 
 
 class Repeat:
@@ -224,7 +224,7 @@ class Repeat:
         return f"repeat: repeat {self.statement} until {self.expression}\n"
 
     def toC(self):
-        return "do { \n" + self.statement.toC() + "} while(" + self.expression.toC() + ");\n"
+        return "do { \n" + self.statement.toC() + "} while(!(" + self.expression.toC() + "));\n"
 
 
 class While:
@@ -315,7 +315,7 @@ class Type:
         self.typename = typename
 
     def __str__(self):
-        return f"type: {self.typename}\n"
+        return f"type: {self.typename}"
 
     def toC(self):
         if self.typename == "integer":
